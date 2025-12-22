@@ -110,6 +110,7 @@ function collectCoin(brick) {
 
   // Hide visually (do NOT remove from DOM)
   brick.element.style.visibility = "hidden";
+  brick.element.style.pointerEvents = "none";
 
   // Remove from game logic
   bricks = bricks.filter(b => b !== brick);
