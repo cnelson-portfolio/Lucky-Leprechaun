@@ -25,13 +25,10 @@ const MAX_LEVEL = 10;
 
 /* ------- DEFINE GAME BOARD DIMENSIONS ---------*/
 function resizeGameBoard(gridSize) {
-  const hudHeight = document.getElementById("hud").offsetHeight;
-  const instructionsHeight = document.getElementById("instructions").offsetHeight;
+  const wrapper = document.getElementById("game-wrapper");
 
-  const availableHeight =
-    window.innerHeight - hudHeight - instructionsHeight - 16;
-
-  const availableWidth = window.innerWidth - 16;
+  const availableWidth = wrapper.clientWidth;
+  const availableHeight = wrapper.clientHeight;
 
   const size = Math.min(availableWidth, availableHeight);
 
@@ -40,6 +37,7 @@ function resizeGameBoard(gridSize) {
   game.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
   game.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
 }
+
 
 
 /* ---------- LOAD HIGH SCORE ---------- */
