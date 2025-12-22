@@ -1,4 +1,4 @@
-const CACHE_NAME = "brick-buster-v1";
+const CACHE_NAME = "brick-buster-v2";
 const ASSETS = [
   "/",
   "/index.html",
