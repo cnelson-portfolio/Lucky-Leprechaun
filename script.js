@@ -156,6 +156,30 @@ function nextLevel() {
   }
 }
 
+/* ---------- RESET GAME ---------*/
+function resetGame() {
+  clearInterval(timer);
+  timer = null;
+
+  level = 1;
+  coins = 0;
+  timeLeft = 10;
+  gameStarted = false;
+
+  bricks = [];
+  game.innerHTML = "";
+
+  levelEl.textContent = "Level 1";
+  timerEl.textContent = timeLeft;
+  coinCountEl.textContent = coins;
+
+  instructionsEl.textContent = "Tap the brick to begin";
+
+  game.style.gridTemplateColumns = "repeat(1, 1fr)";
+
+  createBrick();
+}
+
 /* ---------- GAME OVER ---------- */
 
 function endGame() {
@@ -180,7 +204,7 @@ function endGame() {
 
 
   alert("Thanks for playing!");
-  location.reload();
+  resetGame();
 }
 
 /* ---------- INIT ---------- */
