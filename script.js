@@ -23,6 +23,25 @@ const BRICK_IMAGES = [
 const HITS_PER_STATE = 5;
 const MAX_LEVEL = 10;
 
+/* ------- DEFINE GAME BOARD DIMENSIONS ---------*/
+function resizeGameBoard(gridSize) {
+  const hudHeight = document.getElementById("hud").offsetHeight;
+  const instructionsHeight = document.getElementById("instructions").offsetHeight;
+
+  const availableHeight =
+    window.innerHeight - hudHeight - instructionsHeight - 16;
+
+  const availableWidth = window.innerWidth - 16;
+
+  const size = Math.min(availableWidth, availableHeight);
+
+  game.style.width = `${size}px`;
+  game.style.height = `${size}px`;
+  game.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+  game.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
+}
+
+
 /* ---------- LOAD HIGH SCORE ---------- */
 const highScoreTextEl = document.getElementById("highScoreText");
 
@@ -148,8 +167,8 @@ function nextLevel() {
   const brickCount = level * level;
 
   const gridSize = level;
-  game.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-  game.style.gridAutoRows = "1fr";
+  
+  resizeGameBoard(level);
 
   for (let i = 0; i < brickCount; i++) {
     createBrick();
@@ -215,8 +234,8 @@ function startGame() {
   coinCountEl.textContent = coins;
 
   const gridSize = level;
-  game.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-  game.style.gridAutoRows = "1fr";
+
+  resizeGameBoard(level);
 
   createBrick();
 
@@ -226,6 +245,11 @@ window.addEventListener("load", () => {
   loadHighScore();
   startGame();
 });
+
+window.addEventListener("resize", () => {
+  resizeGameBoard(level);
+});
+
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
