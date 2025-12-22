@@ -59,13 +59,12 @@ body {
 /* ---------- GAME AREA ---------- */
 
 #game {
-  flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 12px;
-
-  padding: 12px;
+  gap: 10px;
+  justify-content: center;
+  align-content: center;
 }
+
 
 /* ---------- BREAKABLE OBJECT ---------- */
 
@@ -114,14 +113,19 @@ body {
   -webkit-touch-callout: none;
 }
 
-
-
 /* ---------- DISABLE IMAGE DRAGGING -----*/
 img {
   pointer-events: auto;
   -webkit-user-drag: none;
 }
 
+/* ---------- DISABLE PAGE SCROLLING -----*/
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+}
 
 
 
