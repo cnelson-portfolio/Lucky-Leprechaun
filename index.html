@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#222222">
+  <title>Brick Buster</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json">
+
+</head>
+<body>
+
+  <!-- Top HUD -->
+  <div id="hud">
+    <div id="level">Level 1</div>
+
+    <div id="timer">30</div>
+
+    <div id="coins">
+      <img src="coin.svg" alt="Coin" />
+      <span id="coinCount">0</span>
+    </div>
+  </div>
+
+  <!-- Instructions -->
+  <div id="instructions">
+    Tap the brick to begin
+  </div>
+
+  <!-- Game Area -->
+  <div id="game"></div>
+
+  <!-- Audio -->
+  <audio id="coinSound" src="get_coin.mp3" preload="auto"></audio>
+
+  <!-- High Score -->
+  <div id="highScore">
+    HIGH SCORE: <span id="highScoreText">—</span>
+  </div>
+
+  <!-- Run Java Script -->
+  <script src="script.js"></script>
+
+</body>
+</html>

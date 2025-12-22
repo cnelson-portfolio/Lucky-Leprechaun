@@ -1,0 +1,15 @@
+{
+  "name": "Brick Buster",
+  "short_name": "Brick Buster",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#222222",
+  "theme_color": "#222222",
+  "icons": [
+    {
+      "src": "brick_buster.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
