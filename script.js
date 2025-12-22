@@ -108,13 +108,17 @@ function collectCoin(brick) {
   coins++;
   coinCountEl.textContent = coins;
 
-  brick.element.parentElement."hidden";
+  // Hide visually (do NOT remove from DOM)
+  brick.element.style.visibility = "hidden";
+
+  // Remove from game logic
   bricks = bricks.filter(b => b !== brick);
 
   if (bricks.length === 0) {
     nextLevel();
   }
 }
+
 
 /* ---------- LEVELS ---------- */
 
