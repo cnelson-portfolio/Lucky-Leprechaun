@@ -108,7 +108,7 @@ function collectCoin(brick) {
   coins++;
   coinCountEl.textContent = coins;
 
-  brick.element.parentElement.hidden();
+  brick.element.parentElement."hidden";
   bricks = bricks.filter(b => b !== brick);
 
   if (bricks.length === 0) {
