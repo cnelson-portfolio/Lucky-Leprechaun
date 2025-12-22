@@ -108,7 +108,7 @@ function collectCoin(brick) {
   coins++;
   coinCountEl.textContent = coins;
 
-  brick.element.parentElement.remove();
+  brick.element.parentElement.hide();
   bricks = bricks.filter(b => b !== brick);
 
   if (bricks.length === 0) {
@@ -130,11 +130,15 @@ function nextLevel() {
   timeLeft += level * 10;
   timerEl.textContent = timeLeft;
 
-  instructionsEl.textContent = "Tap the brick to begin";
+  instructionsEl.textContent = "You've unlocked the next level! KEEP GOING!!!";
 
   gameStarted = false;
   clearInterval(timer);
   timer = null;
+
+  const gridSize = Math.sqrt(level * level);
+  game.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+
 
   bricks = [];
   game.innerHTML = "";
@@ -179,6 +183,10 @@ function startGame() {
   levelEl.textContent = `Level ${level}`;
   timerEl.textContent = timeLeft;
   coinCountEl.textContent = coins;
+
+  const gridSize = Math.sqrt(level * level);
+  game.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+
 
   createBrick();
 
