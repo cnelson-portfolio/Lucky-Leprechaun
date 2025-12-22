@@ -59,14 +59,13 @@ body {
 /* ---------- GAME AREA ---------- */
 
 #game {
+  flex: 1;
   display: grid;
-  width: 100vmin;
-  height: 100vmin;
-  max-width: 100vw;
-  max-height: 100vh;
+  width: 100%;
+  max-width: 100vmin;
   margin: 0 auto;
+  aspect-ratio: 1 / 1;
 }
-
 
 
 /* ---------- BREAKABLE OBJECT ---------- */
