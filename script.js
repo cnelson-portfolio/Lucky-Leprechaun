@@ -108,7 +108,7 @@ function collectCoin(brick) {
   coins++;
   coinCountEl.textContent = coins;
 
-  brick.element.parentElement.hide();
+  brick.element.parentElement.hidden();
   bricks = bricks.filter(b => b !== brick);
 
   if (bricks.length === 0) {
@@ -136,14 +136,13 @@ function nextLevel() {
   clearInterval(timer);
   timer = null;
 
-  const gridSize = Math.sqrt(level * level);
-  game.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-
-
   bricks = [];
   game.innerHTML = "";
 
   const brickCount = level * level;
+
+  const gridSize = level;
+  game.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
 
   for (let i = 0; i < brickCount; i++) {
     createBrick();
@@ -184,9 +183,8 @@ function startGame() {
   timerEl.textContent = timeLeft;
   coinCountEl.textContent = coins;
 
-  const gridSize = Math.sqrt(level * level);
+  const gridSize = level;
   game.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-
 
   createBrick();
 
