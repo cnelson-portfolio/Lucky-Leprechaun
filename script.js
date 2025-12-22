@@ -64,7 +64,8 @@ function createBrick() {
   const brick = {
     state: 0,
     hits: 0,
-    element: img
+    element: img,
+    container: container
   };
 
   img.addEventListener("click", () => handleTap(brick));
@@ -109,8 +110,8 @@ function collectCoin(brick) {
   coinCountEl.textContent = coins;
 
   // Hide visually (do NOT remove from DOM)
-  brick.element.style.visibility = "hidden";
-  brick.element.style.pointerEvents = "none";
+  brick.container.style.visibility = "hidden";
+  brick.container.style.pointerEvents = "none";
 
   // Remove from game logic
   bricks = bricks.filter(b => b !== brick);
