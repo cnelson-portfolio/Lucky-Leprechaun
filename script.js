@@ -149,6 +149,7 @@ function nextLevel() {
 
   const gridSize = level;
   game.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+  game.style.gridAutoRows = "1fr";
 
   for (let i = 0; i < brickCount; i++) {
     createBrick();
@@ -191,6 +192,7 @@ function startGame() {
 
   const gridSize = level;
   game.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+  game.style.gridAutoRows = "1fr";
 
   createBrick();
 
