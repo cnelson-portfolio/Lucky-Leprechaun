@@ -1,255 +1,118 @@
 const game = document.getElementById("game");
-const timerEl = document.getElementById("timer");
-const levelEl = document.getElementById("level");
-const coinCountEl = document.getElementById("coinCount");
-const instructionsEl = document.getElementById("instructions");
-const coinSound = document.getElementById("coinSound");
-
-let level = 1;
-let coins = 0;
-let timeLeft = 10;
-let timer = null;
-let gameStarted = false;
-let bricks = [];
-
-const BRICK_IMAGES = [
-  "brick_0.svg",
-  "brick_1.svg",
-  "brick_2.svg",
-  "brick_3.svg",
-  "coin.svg"
-];
-
-const HITS_PER_STATE = 5;
-const MAX_LEVEL = 10;
-
-/* ------- DEFINE GAME BOARD DIMENSIONS ---------*/
-function resizeGameBoard(gridSize) {
-  const wrapper = document.getElementById("game-wrapper");
-
-  const availableWidth = wrapper.clientWidth;
-  const availableHeight = wrapper.clientHeight;
-
-  const size = Math.min(availableWidth, availableHeight);
-
-  game.style.width = `${size}px`;
-  game.style.height = `${size}px`;
-  game.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-  game.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
-}
-
-
-
-/* ---------- LOAD HIGH SCORE ---------- */
-const highScoreTextEl = document.getElementById("highScoreText");
-
-function loadHighScore() {
-  const stored = JSON.parse(localStorage.getItem("highScore"));
-
-  if (stored && stored.player && stored.score !== undefined) {
-    highScoreTextEl.textContent = `${stored.player} ${stored.score}`;
-  } else {
-    highScoreTextEl.textContent = "—";
-  }
-}
-
-
-/* ---------- TIMER ---------- */
-
-function startTimer() {
-  if (timer) return;
-
-  timer = setInterval(() => {
-    timeLeft--;
-    timerEl.textContent = timeLeft;
-
-    if (timeLeft <= 0) {
-      endGame();
-    }
-  }, 1000);
-}
-
-/* ---------- BRICKS ---------- */
-
-function createBrick() {
-  const container = document.createElement("div");
-  container.className = "breakable";
-
-  const img = document.createElement("img");
-  img.src = BRICK_IMAGES[0];
-
-  const brick = {
-    state: 0,
-    hits: 0,
-    element: img,
-    container: container
-  };
-
-  img.addEventListener("click", () => handleTap(brick));
-
-  container.appendChild(img);
-  game.appendChild(container);
-
-  bricks.push(brick);
-}
-
-function handleTap(brick) {
-  if (!gameStarted) {
-    gameStarted = true;
-    instructionsEl.textContent = "Keep tapping the brick to break it";
-    startTimer();
-  }
-
-  // Coin collected
-  if (brick.state === BRICK_IMAGES.length - 1) {
-    collectCoin(brick);
-    return;
-  }
-
-  brick.hits++;
-
-  if (brick.hits >= HITS_PER_STATE) {
-    brick.hits = 0;
-    brick.state++;
-    brick.element.src = BRICK_IMAGES[brick.state];
-
-    if (brick.state === BRICK_IMAGES.length - 1) {
-      instructionsEl.textContent = "Tap the coin to collect it";
-    }
-  }
-}
-
-/* ---------- COINS ---------- */
-
-function collectCoin(brick) {
-  coinSound.play();
-  coins++;
-  coinCountEl.textContent = coins;
-
-  // Hide visually (do NOT remove from DOM)
-  brick.container.style.visibility = "hidden";
-  brick.container.style.pointerEvents = "none";
-
-  // Remove from game logic
-  bricks = bricks.filter(b => b !== brick);
-
-  if (bricks.length === 0) {
-    nextLevel();
-  }
-}
-
-
-/* ---------- LEVELS ---------- */
-
-function nextLevel() {
-  if (level >= MAX_LEVEL) {
-    endGame();
-    return;
-  }
-
-  level++;
-  levelEl.textContent = `Level ${level}`;
-
-  timeLeft += level * 10;
-  timerEl.textContent = timeLeft;
-
-  instructionsEl.textContent = "You've unlocked the next level! KEEP GOING!!!";
-
-  gameStarted = false;
-  clearInterval(timer);
-  timer = null;
-
-  bricks = [];
-  game.innerHTML = "";
-
-  const brickCount = level * level;
-
-  const gridSize = level;
-  
-  resizeGameBoard(level);
-
-  for (let i = 0; i < brickCount; i++) {
-    createBrick();
-  }
-}
-
-/* ---------- RESET GAME ---------*/
-function resetGame() {
-  clearInterval(timer);
-  timer = null;
-
-  level = 1;
-  coins = 0;
-  timeLeft = 10;
-  gameStarted = false;
-
-  bricks = [];
-  game.innerHTML = "";
-
-  levelEl.textContent = "Level 1";
-  timerEl.textContent = timeLeft;
-  coinCountEl.textContent = coins;
-
-  instructionsEl.textContent = "Tap the brick to begin";
-
-  game.style.gridTemplateColumns = "repeat(1, 1fr)";
-
-  createBrick();
-}
-
-/* ---------- GAME OVER ---------- */
-
-function endGame() {
-  clearInterval(timer);
-  timer = null;
-
-  const name = prompt("Game Over! Enter your name:");
-
-  if (name) {
-    const stored = JSON.parse(localStorage.getItem("highScore"));
-
-    if (!stored || coins > stored.score) {
-      const newHighScore = {
-        player: name,
-        score: coins
-      };
-
-      localStorage.setItem("highScore", JSON.stringify(newHighScore));
-      highScoreTextEl.textContent = `${name} ${coins}`;
-    }
-  }
-
-
-  alert("Thanks for playing!");
-  resetGame();
-}
-
-/* ---------- INIT ---------- */
-
-function startGame() {
-  levelEl.textContent = `Level ${level}`;
-  timerEl.textContent = timeLeft;
-  coinCountEl.textContent = coins;
-
-  const gridSize = level;
-
-  resizeGameBoard(level);
-
-  createBrick();
-
-}
-
-window.addEventListener("load", () => {
-  loadHighScore();
-  startGame();
+const player = document.getElementById("player");
+const scoreEl = document.getElementById("score");
+const missesEl = document.getElementById("misses");
+const rotateNotice = document.getElementById("rotateNotice");
+
+let score = 0;
+let misses = 0;
+
+let playerX = 50;
+let speed = 2;
+let spawnRate = 1500;
+
+const MAX_MISSES = 5;
+const PLAYER_SPEED = 3;
+
+/* ---------------- INPUT ---------------- */
+
+// Keyboard
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft") movePlayer(-PLAYER_SPEED);
+  if (e.key === "ArrowRight") movePlayer(PLAYER_SPEED);
 });
 
-window.addEventListener("resize", () => {
-  resizeGameBoard(level);
-});
-
-
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js");
+// Tilt (mobile)
+if (window.DeviceOrientationEvent) {
+  window.addEventListener("deviceorientation", e => {
+    if (e.gamma !== null) {
+      movePlayer(e.gamma * 0.1);
+    }
+  });
 }
 
+function movePlayer(delta) {
+  playerX = Math.max(0, Math.min(100, playerX + delta));
+  player.style.left = `${playerX}%`;
+}
+
+/* ---------------- OBJECTS ---------------- */
+
+function spawnObject() {
+  const obj = document.createElement("div");
+  const isBad = Math.random() < 0.25;
+
+  obj.className = `object ${isBad ? "bad" : "good"}`;
+  obj.style.left = Math.random() * 90 + "%";
+
+  game.appendChild(obj);
+
+  let y = 0;
+
+  const fall = setInterval(() => {
+    y += speed;
+    obj.style.top = `${y}px`;
+
+    if (collision(obj, player)) {
+      clearInterval(fall);
+      obj.remove();
+      handleCatch(isBad);
+    }
+
+    if (y > game.clientHeight) {
+      clearInterval(fall);
+      obj.remove();
+      handleMiss();
+    }
+  }, 16);
+}
+
+function collision(a, b) {
+  const r1 = a.getBoundingClientRect();
+  const r2 = b.getBoundingClientRect();
+  return !(
+    r1.bottom < r2.top ||
+    r1.top > r2.bottom ||
+    r1.right < r2.left ||
+    r1.left > r2.right
+  );
+}
+
+/* ---------------- GAME LOGIC ---------------- */
+
+function handleCatch(isBad) {
+  score += isBad ? -1 : 1;
+  scoreEl.textContent = score;
+}
+
+function handleMiss() {
+  misses++;
+  missesEl.textContent = misses;
+
+  if (misses >= MAX_MISSES) {
+    alert("Game Over!");
+    location.reload();
+  }
+}
+
+/* ---------------- DIFFICULTY ---------------- */
+
+function increaseDifficulty() {
+  speed += 0.5;
+  spawnRate = Math.max(500, spawnRate - 100);
+}
+
+/* ---------------- ORIENTATION ---------------- */
+
+function checkOrientation() {
+  const landscape = window.innerWidth > window.innerHeight;
+  rotateNotice.style.display = landscape ? "none" : "flex";
+}
+
+window.addEventListener("resize", checkOrientation);
+checkOrientation();
+
+/* ---------------- START ---------------- */
+
+setInterval(spawnObject, spawnRate);
+setInterval(increaseDifficulty, 5000);
