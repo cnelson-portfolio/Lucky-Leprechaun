@@ -5,34 +5,30 @@ const startScreen = document.getElementById("start-screen");
 const scoreEl = document.getElementById("score");
 const missesEl = document.getElementById("misses");
 
-/* ---------------- GAME STATE ---------------- */
+/* ---------------- STATE ---------------- */
+
+let gameRunning = false;
 
 let score = 0;
 let misses = 0;
-
-let gameRunning = false;
 
 let spawnInterval = null;
 let difficultyInterval = null;
 
 /* ---------------- PLAYER ---------------- */
 
-let playerX = 50; // percent (0–100)
-let velocity = 0;
-
-const PLAYER_SPEED = 0.8;
-const FRICTION = 0.9;
+let playerX = 50;           // percent
+let targetX = 50;           // where player wants to go
+const SMOOTHING = 0.12;     // lower = smoother
 
 function updatePlayer() {
-  playerX += velocity;
-  velocity *= FRICTION;
+  if (!gameRunning) return;
 
+  playerX += (targetX - playerX) * SMOOTHING;
   playerX = Math.max(0, Math.min(100, playerX));
   player.style.left = `${playerX}%`;
 
-  if (gameRunning) {
-    requestAnimationFrame(updatePlayer);
-  }
+  requestAnimationFrame(updatePlayer);
 }
 
 /* ---------------- INPUT ---------------- */
@@ -41,17 +37,29 @@ function updatePlayer() {
 document.addEventListener("keydown", e => {
   if (!gameRunning) return;
 
-  if (e.key === "ArrowLeft") velocity -= PLAYER_SPEED;
-  if (e.key === "ArrowRight") velocity += PLAYER_SPEED;
+  if (e.key === "ArrowLeft") targetX -= 4;
+  if (e.key === "ArrowRight") targetX += 4;
 });
 
-// Tilt (smoothed & centered)
+/* ---- TILT (CALIBRATED) ---- */
+
+let neutralGamma = null;
+
 if (window.DeviceOrientationEvent) {
   window.addEventListener("deviceorientation", e => {
-    if (!gameRunning || e.gamma === null) return;
+    if (!gameRunning || e.gamma == null) return;
 
-    const tilt = Math.max(-20, Math.min(20, e.gamma)) / 20;
-    velocity += tilt * PLAYER_SPEED;
+    if (neutralGamma === null) {
+      neutralGamma = e.gamma; // capture baseline
+      return;
+    }
+
+    const delta = e.gamma - neutralGamma;
+
+    // Clamp + scale gently
+    const normalized = Math.max(-15, Math.min(15, delta)) / 15;
+
+    targetX = 50 + normalized * 40;
   });
 }
 
@@ -131,13 +139,19 @@ function increaseDifficulty() {
 
 /* ---------------- START ---------------- */
 
-startScreen.addEventListener("click", () => {
+startScreen.addEventListener("pointerdown", () => {
+  if (gameRunning) return;
+
   startScreen.style.display = "none";
   startGame();
 });
 
 function startGame() {
   gameRunning = true;
+
+  neutralGamma = null; // reset calibration
+  targetX = 50;
+  playerX = 50;
 
   spawnInterval = setInterval(spawnObject, spawnRate);
   difficultyInterval = setInterval(increaseDifficulty, 5000);
