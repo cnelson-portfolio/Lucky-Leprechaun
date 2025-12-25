@@ -6,54 +6,51 @@
 }
 
 body {
-  margin: 0;
-  height: 100dvh;          /* modern, mobile-safe */
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   background: #000;
+  font-family: system-ui, sans-serif;
+  color: #fff;
 }
 
-/* HUD stays natural height */
+/* HUD */
 #hud {
-  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: #111;
+  font-size: 16px;
+  z-index: 20;
 }
 
-/* Game wrapper fills remaining space */
+/* Game layout */
 #game-wrapper {
   flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
 }
 
-/* Game fills wrapper */
 #game {
   position: relative;
   width: 100%;
   height: 100%;
-  background: #000;
   overflow: hidden;
+  background: #000;
 }
 
 /* Player */
 #player {
   position: absolute;
-  bottom: 12px;
+  bottom: 16px;
   left: 50%;
-
   width: 96px;
   height: 20px;
-
   background: linear-gradient(#00ffcc, #009988);
   border-radius: 10px;
-
   transform: translateX(-50%);
   z-index: 10;
 }
 
-
-
-/* Falling Objects */
+/* Falling objects */
 .object {
   position: absolute;
   top: 0;
@@ -62,10 +59,22 @@ body {
   border-radius: 50%;
 }
 
-.good {
-  background: gold;
+.good { background: gold; }
+.bad  { background: crimson; }
+
+/* Start screen */
+#start-screen {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
 }
 
-.bad {
-  background: crimson;
+.start-text {
+  font-size: 28px;
+  font-weight: bold;
+  color: #00ffcc;
 }
