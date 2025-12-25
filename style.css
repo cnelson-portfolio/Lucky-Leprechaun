@@ -69,17 +69,3 @@ body {
 .bad {
   background: crimson;
 }
-
-/* Rotate Overlay */
-#rotateNotice {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.85);
-  color: #fff;
-  font-size: 20px;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  z-index: 10;
-}
