@@ -93,8 +93,9 @@ function spawnObject() {
     if (y > game.clientHeight) {
       clearInterval(fall);
       obj.remove();
-      if (obj.className === `object bad`) return;
-      handleMiss();
+      if (!isBad) {
+        handleMiss();
+      }
     }
   }, 16);
 }
