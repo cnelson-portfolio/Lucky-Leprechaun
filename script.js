@@ -1,72 +1,83 @@
 const game = document.getElementById("game");
 const player = document.getElementById("player");
-const startScreen = document.getElementById("start-screen");
-
 const scoreEl = document.getElementById("score");
 const missesEl = document.getElementById("misses");
 
-/* ---------------- STATE ---------------- */
-
-let gameRunning = false;
+/* ---------------- GAME STATE ---------------- */
 
 let score = 0;
 let misses = 0;
+let speed = 2;
+let spawnRate = 1500;
+let gameRunning = false;
 
-let spawnInterval = null;
-let difficultyInterval = null;
+const MAX_MISSES = 5;
+const PLAYER_SPEED = 2;
 
-/* ---------------- PLAYER ---------------- */
+/* ---------------- PLAYER POSITION ---------------- */
 
-let playerX = 50;           // percent
-let targetX = 50;           // where player wants to go
-const SMOOTHING = 0.12;     // lower = smoother
+let playerX = 50; // percent (0–100)
+player.style.left = "50%";
 
-function updatePlayer() {
-  if (!gameRunning) return;
+/* ---------------- START OVERLAY ---------------- */
 
-  playerX += (targetX - playerX) * SMOOTHING;
-  playerX = Math.max(0, Math.min(100, playerX));
-  player.style.left = `${playerX}%`;
+const startOverlay = document.createElement("div");
+startOverlay.id = "startOverlay";
+startOverlay.textContent = "Tap to Start";
+document.body.appendChild(startOverlay);
 
-  requestAnimationFrame(updatePlayer);
-}
+startOverlay.addEventListener("click", startGame);
 
-/* ---------------- INPUT ---------------- */
+/* ---------------- INPUT: KEYBOARD ---------------- */
 
-// Keyboard
 document.addEventListener("keydown", e => {
   if (!gameRunning) return;
 
-  if (e.key === "ArrowLeft") targetX -= 4;
-  if (e.key === "ArrowRight") targetX += 4;
+  if (e.key === "ArrowLeft") movePlayer(-PLAYER_SPEED);
+  if (e.key === "ArrowRight") movePlayer(PLAYER_SPEED);
 });
 
-/* ---- TILT (CALIBRATED) ---- */
+/* ---------------- INPUT: TILT (Z-AXIS) ---------------- */
 
-let neutralGamma = null;
+let baseAlpha = null;
+let tiltVelocity = 0;
 
 if (window.DeviceOrientationEvent) {
   window.addEventListener("deviceorientation", e => {
-    if (!gameRunning || e.gamma == null) return;
+    if (!gameRunning) return;
+    if (e.alpha === null) return;
 
-    if (neutralGamma === null) {
-      neutralGamma = e.gamma; // capture baseline
+    // Capture neutral steering position
+    if (baseAlpha === null) {
+      baseAlpha = e.alpha;
       return;
     }
 
-    const delta = e.gamma - neutralGamma;
+    // Calculate delta with wrap correction
+    let delta = e.alpha - baseAlpha;
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
 
-    // Clamp + scale gently
-    const normalized = Math.max(-15, Math.min(15, delta)) / 15;
+    // Normalize (-1 to 1)
+    let normalized = Math.max(-30, Math.min(30, delta)) / 30;
 
-    targetX = 50 + normalized * 40;
+    // Dead zone
+    if (Math.abs(normalized) < 0.05) normalized = 0;
+
+    // Smooth steering
+    tiltVelocity = tiltVelocity * 0.8 + normalized * 0.2;
+    movePlayer(tiltVelocity * 2);
   });
 }
 
-/* ---------------- OBJECTS ---------------- */
+/* ---------------- PLAYER MOVEMENT ---------------- */
 
-let fallSpeed = 2;
-let spawnRate = 1500;
+function movePlayer(delta) {
+  playerX = Math.max(0, Math.min(100, playerX + delta));
+  player.style.left = `${playerX}%`;
+}
+
+/* ---------------- OBJECT SPAWNING ---------------- */
 
 function spawnObject() {
   if (!gameRunning) return;
@@ -75,13 +86,15 @@ function spawnObject() {
   const isBad = Math.random() < 0.25;
 
   obj.className = `object ${isBad ? "bad" : "good"}`;
+  obj.dataset.bad = isBad;
   obj.style.left = Math.random() * 90 + "%";
+
   game.appendChild(obj);
 
   let y = 0;
 
   const fall = setInterval(() => {
-    y += fallSpeed;
+    y += speed;
     obj.style.top = `${y}px`;
 
     if (collision(obj, player)) {
@@ -93,12 +106,12 @@ function spawnObject() {
     if (y > game.clientHeight) {
       clearInterval(fall);
       obj.remove();
-      if (!isBad) {
-        handleMiss();
-      }
+      if (!isBad) handleMiss(); // bad objects do NOT count as misses
     }
   }, 16);
 }
+
+/* ---------------- COLLISION ---------------- */
 
 function collision(a, b) {
   const r1 = a.getBoundingClientRect();
@@ -123,7 +136,7 @@ function handleMiss() {
   misses++;
   missesEl.textContent = misses;
 
-  if (misses >= 5) {
+  if (misses >= MAX_MISSES) {
     alert("Game Over!");
     location.reload();
   }
@@ -132,31 +145,24 @@ function handleMiss() {
 /* ---------------- DIFFICULTY ---------------- */
 
 function increaseDifficulty() {
-  fallSpeed += 0.4;
+  if (!gameRunning) return;
+
+  speed += 0.4;
   spawnRate = Math.max(500, spawnRate - 100);
 
   clearInterval(spawnInterval);
   spawnInterval = setInterval(spawnObject, spawnRate);
 }
 
-/* ---------------- START ---------------- */
+/* ---------------- START GAME ---------------- */
 
-startScreen.addEventListener("pointerdown", () => {
-  if (gameRunning) return;
-
-  startScreen.style.display = "none";
-  startGame();
-});
+let spawnInterval;
+let difficultyInterval;
 
 function startGame() {
+  startOverlay.remove();
   gameRunning = true;
-
-  neutralGamma = null; // reset calibration
-  targetX = 50;
-  playerX = 50;
 
   spawnInterval = setInterval(spawnObject, spawnRate);
   difficultyInterval = setInterval(increaseDifficulty, 5000);
-
-  requestAnimationFrame(updatePlayer);
 }
