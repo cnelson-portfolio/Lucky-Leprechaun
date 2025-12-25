@@ -5,6 +5,10 @@ const startScreen = document.getElementById("start-screen");
 const scoreEl = document.getElementById("score");
 const missesEl = document.getElementById("misses");
 
+const PLAYER_NORMAL_WIDTH = 96;
+const PLAYER_SHRUNK_WIDTH = 48;
+const SHRINK_DURATION = 3000; // ms
+
 /* ---------------- STATE ---------------- */
 
 let gameRunning = false;
@@ -14,6 +18,9 @@ let misses = 0;
 
 let spawnInterval = null;
 let difficultyInterval = null;
+
+let shrinkTimeout = null;
+
 
 /* ---------------- PLAYER ---------------- */
 
@@ -110,6 +117,23 @@ function collision(a, b) {
   );
 }
 
+/* ---------------- SHRINK BAR ---------- */
+
+function shrinkPlayer() {
+  // Apply shrink
+  player.style.width = `${PLAYER_SHRUNK_WIDTH}px`;
+
+  // Reset timer if already shrinking
+  if (shrinkTimeout) {
+    clearTimeout(shrinkTimeout);
+  }
+
+  // Restore after delay
+  shrinkTimeout = setTimeout(() => {
+    player.style.width = `${PLAYER_NORMAL_WIDTH}px`;
+    shrinkTimeout = null;
+  }, SHRINK_DURATION);
+}
 
 /* ---------------- SCREEN TIMEOUT ------------ */
 
@@ -147,9 +171,15 @@ function releaseWakeLock() {
 /* ---------------- GAME LOGIC ---------------- */
 
 function handleCatch(isBad) {
-  score += isBad ? -1 : 1;
+  if (isBad) {
+    shrinkPlayer();
+    return;
+  }
+
+  score++;
   scoreEl.textContent = score;
 }
+
 
 function handleMiss() {
   misses++;
