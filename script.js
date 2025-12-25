@@ -4,6 +4,8 @@ const scoreEl = document.getElementById("score");
 const missesEl = document.getElementById("misses");
 const rotateNotice = document.getElementById("rotateNotice");
 
+player.style.outline = "2px solid red";
+
 let score = 0;
 let misses = 0;
 
