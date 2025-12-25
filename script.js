@@ -1,70 +1,79 @@
 const game = document.getElementById("game");
-
-let player = document.getElementById("player");
-
-if (!player) {
-  player = document.createElement("div");
-  player.id = "player";
-  game.appendChild(player);
-}
-
-playerX = 50;
-player.style.left = "50%";
-
+const player = document.getElementById("player");
+const startScreen = document.getElementById("start-screen");
 
 const scoreEl = document.getElementById("score");
 const missesEl = document.getElementById("misses");
 
+/* ---------------- GAME STATE ---------------- */
+
 let score = 0;
 let misses = 0;
 
-let speed = 2;
-let spawnRate = 1500;
+let gameRunning = false;
 
-const MAX_MISSES = 5;
-const PLAYER_SPEED = 3;
+let spawnInterval = null;
+let difficultyInterval = null;
+
+/* ---------------- PLAYER ---------------- */
+
+let playerX = 50; // percent (0–100)
+let velocity = 0;
+
+const PLAYER_SPEED = 0.8;
+const FRICTION = 0.9;
+
+function updatePlayer() {
+  playerX += velocity;
+  velocity *= FRICTION;
+
+  playerX = Math.max(0, Math.min(100, playerX));
+  player.style.left = `${playerX}%`;
+
+  if (gameRunning) {
+    requestAnimationFrame(updatePlayer);
+  }
+}
 
 /* ---------------- INPUT ---------------- */
 
 // Keyboard
 document.addEventListener("keydown", e => {
-  if (e.key === "ArrowLeft") movePlayer(-PLAYER_SPEED);
-  if (e.key === "ArrowRight") movePlayer(PLAYER_SPEED);
+  if (!gameRunning) return;
+
+  if (e.key === "ArrowLeft") velocity -= PLAYER_SPEED;
+  if (e.key === "ArrowRight") velocity += PLAYER_SPEED;
 });
 
-// Tilt (mobile)
+// Tilt (smoothed & centered)
 if (window.DeviceOrientationEvent) {
   window.addEventListener("deviceorientation", e => {
-    if (e.gamma === null) return;
+    if (!gameRunning || e.gamma === null) return;
 
-    // Normalize tilt (-1 to 1)
-    const tilt = Math.max(-30, Math.min(30, e.gamma)) / 30;
-
-    // Smooth movement
-    movePlayer(tilt * PLAYER_SPEED);
+    const tilt = Math.max(-20, Math.min(20, e.gamma)) / 20;
+    velocity += tilt * PLAYER_SPEED;
   });
-}
-
-function movePlayer(delta) {
-  playerX = Math.max(0, Math.min(100, playerX + delta));
-  player.style.left = `${playerX}%`;
 }
 
 /* ---------------- OBJECTS ---------------- */
 
+let fallSpeed = 2;
+let spawnRate = 1500;
+
 function spawnObject() {
+  if (!gameRunning) return;
+
   const obj = document.createElement("div");
   const isBad = Math.random() < 0.25;
 
   obj.className = `object ${isBad ? "bad" : "good"}`;
   obj.style.left = Math.random() * 90 + "%";
-
   game.appendChild(obj);
 
   let y = 0;
 
   const fall = setInterval(() => {
-    y += speed;
+    y += fallSpeed;
     obj.style.top = `${y}px`;
 
     if (collision(obj, player)) {
@@ -84,6 +93,7 @@ function spawnObject() {
 function collision(a, b) {
   const r1 = a.getBoundingClientRect();
   const r2 = b.getBoundingClientRect();
+
   return !(
     r1.bottom < r2.top ||
     r1.top > r2.bottom ||
@@ -103,7 +113,7 @@ function handleMiss() {
   misses++;
   missesEl.textContent = misses;
 
-  if (misses >= MAX_MISSES) {
+  if (misses >= 5) {
     alert("Game Over!");
     location.reload();
   }
@@ -112,11 +122,25 @@ function handleMiss() {
 /* ---------------- DIFFICULTY ---------------- */
 
 function increaseDifficulty() {
-  speed += 0.5;
+  fallSpeed += 0.4;
   spawnRate = Math.max(500, spawnRate - 100);
+
+  clearInterval(spawnInterval);
+  spawnInterval = setInterval(spawnObject, spawnRate);
 }
 
 /* ---------------- START ---------------- */
 
-setInterval(spawnObject, spawnRate);
-setInterval(increaseDifficulty, 5000);
+startScreen.addEventListener("click", () => {
+  startScreen.style.display = "none";
+  startGame();
+});
+
+function startGame() {
+  gameRunning = true;
+
+  spawnInterval = setInterval(spawnObject, spawnRate);
+  difficultyInterval = setInterval(increaseDifficulty, 5000);
+
+  requestAnimationFrame(updatePlayer);
+}
