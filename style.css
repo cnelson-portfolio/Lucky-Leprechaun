@@ -27,19 +27,29 @@ body {
   position: relative;
   background: #000;
 
-  height: calc(100vh - 48px); /* HUD height */
+  width: 100%;
+  height: calc(100vh - 48px);
+
+  overflow: hidden;
 }
+
 
 /* Player */
 #player {
   position: absolute;
-  bottom: 20px;
+  bottom: 16px;
   left: 50%;
-  width: 80px;
-  height: 24px;
-  background: #00ffcc;
+
+  width: 96px;
+  height: 20px;
+
+  background: linear-gradient(#00ffcc, #009988);
+  border-radius: 10px;
+
   transform: translateX(-50%);
+  z-index: 10;
 }
+
 
 
 /* Falling Objects */
