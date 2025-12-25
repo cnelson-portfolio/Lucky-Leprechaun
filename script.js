@@ -110,6 +110,40 @@ function collision(a, b) {
   );
 }
 
+
+/* ---------------- SCREEN TIMEOUT ------------ */
+
+let wakeLock = null;
+
+async function requestWakeLock() {
+  try {
+    wakeLock = await navigator.wakeLock.request("screen");
+
+    wakeLock.addEventListener("release", () => {
+      console.log("Wake Lock released");
+    });
+
+    console.log("Wake Lock active");
+  } catch (err) {
+    console.warn("Wake Lock failed:", err);
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLock) {
+    wakeLock.release();
+    wakeLock = null;
+  }
+}
+/* ---------------- GAME OVER ----------------- */
+
+function releaseWakeLock() {
+  if (wakeLock) {
+    wakeLock.release();
+    wakeLock = null;
+  }
+}
+
 /* ---------------- GAME LOGIC ---------------- */
 
 function handleCatch(isBad) {
@@ -124,6 +158,7 @@ function handleMiss() {
   if (misses >= 5) {
     alert("Game Over!");
     location.reload();
+    releaseWakeLock();
   }
 }
 
@@ -144,6 +179,13 @@ startScreen.addEventListener("pointerdown", () => {
 
   startScreen.style.display = "none";
   startGame();
+  requestWakeLock();
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && wakeLock === null) {
+    requestWakeLock();
+  }
 });
 
 function startGame() {
