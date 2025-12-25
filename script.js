@@ -19,7 +19,7 @@ let difficultyInterval = null;
 
 let playerX = 50;           // percent
 let targetX = 50;           // where player wants to go
-const SMOOTHING = 0.09;     // lower = smoother
+const SMOOTHING = 0.2;     // lower = smoother
 
 function updatePlayer() {
   if (!gameRunning) return;
