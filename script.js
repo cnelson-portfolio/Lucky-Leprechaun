@@ -14,12 +14,10 @@ player.style.left = "50%";
 
 const scoreEl = document.getElementById("score");
 const missesEl = document.getElementById("misses");
-const rotateNotice = document.getElementById("rotateNotice");
 
 let score = 0;
 let misses = 0;
 
-let playerX = 50;
 let speed = 2;
 let spawnRate = 1500;
 
@@ -117,16 +115,6 @@ function increaseDifficulty() {
   speed += 0.5;
   spawnRate = Math.max(500, spawnRate - 100);
 }
-
-/* ---------------- ORIENTATION ---------------- */
-
-function checkOrientation() {
-  const landscape = window.innerWidth > window.innerHeight;
-  rotateNotice.style.display = landscape ? "none" : "flex";
-}
-
-window.addEventListener("resize", checkOrientation);
-checkOrientation();
 
 /* ---------------- START ---------------- */
 
