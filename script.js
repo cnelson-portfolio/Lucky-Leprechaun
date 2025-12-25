@@ -1,8 +1,15 @@
 const game = document.getElementById("game");
-const player = document.createElement("div");
-player.id = "player";
-game.appendChild(player);
-player.style.outline = "3px solid red";
+
+let player = document.getElementById("player");
+
+if (!player) {
+  player = document.createElement("div");
+  player.id = "player";
+  game.appendChild(player);
+}
+
+playerX = 50;
+player.style.left = "50%";
 
 
 const scoreEl = document.getElementById("score");
@@ -30,9 +37,13 @@ document.addEventListener("keydown", e => {
 // Tilt (mobile)
 if (window.DeviceOrientationEvent) {
   window.addEventListener("deviceorientation", e => {
-    if (e.gamma !== null) {
-      movePlayer(e.gamma * 0.1);
-    }
+    if (e.gamma === null) return;
+
+    // Normalize tilt (-1 to 1)
+    const tilt = Math.max(-30, Math.min(30, e.gamma)) / 30;
+
+    // Smooth movement
+    movePlayer(tilt * PLAYER_SPEED);
   });
 }
 
