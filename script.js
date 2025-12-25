@@ -178,8 +178,8 @@ startScreen.addEventListener("pointerdown", () => {
   if (gameRunning) return;
 
   startScreen.style.display = "none";
-  startGame();
   requestWakeLock();
+  startGame();
 });
 
 document.addEventListener("visibilitychange", () => {
