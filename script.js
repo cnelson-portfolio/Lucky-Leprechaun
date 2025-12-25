@@ -93,9 +93,7 @@ function spawnObject() {
     if (y > game.clientHeight) {
       clearInterval(fall);
       obj.remove();
-      if (!isBad) {
-        handleMiss();
-      }
+      if (!isBad) handleMiss();
     }
   }, 16);
 }
