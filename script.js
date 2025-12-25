@@ -19,7 +19,7 @@ let difficultyInterval = null;
 
 let playerX = 50;           // percent
 let targetX = 50;           // where player wants to go
-const SMOOTHING = 0.12;     // lower = smoother
+const SMOOTHING = 0.09;     // lower = smoother
 
 function updatePlayer() {
   if (!gameRunning) return;
@@ -93,6 +93,7 @@ function spawnObject() {
     if (y > game.clientHeight) {
       clearInterval(fall);
       obj.remove();
+      if (obj.className === 'object bad') return;
       handleMiss();
     }
   }, 16);
