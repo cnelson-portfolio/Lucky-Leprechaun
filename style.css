@@ -6,38 +6,39 @@
 }
 
 body {
-  background: #111;
-  color: #fff;
-  height: 100vh;
+  margin: 0;
+  height: 100dvh;          /* modern, mobile-safe */
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  background: #000;
 }
 
-/* HUD */
+/* HUD stays natural height */
 #hud {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  background: #222;
+  flex: 0 0 auto;
 }
 
-/* Game Area */
+/* Game wrapper fills remaining space */
+#game-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+
+/* Game fills wrapper */
 #game {
   position: relative;
-  background: #000;
-
   width: 100%;
-  height: calc(100vh - 48px);
-
+  height: 100%;
+  background: #000;
   overflow: hidden;
 }
-
 
 /* Player */
 #player {
   position: absolute;
-  bottom: 16px;
+  bottom: 12px;
   left: 50%;
 
   width: 96px;
