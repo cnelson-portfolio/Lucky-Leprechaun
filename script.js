@@ -75,16 +75,36 @@ if (window.DeviceOrientationEvent) {
 
 /* ---------------- OBJECTS ---------------- */
 
+const OBJECT_TYPES = [
+  { type: "bad",   chance: 0.25 },
+  { type: "bonus", chance: 0.05 },
+  { type: "good",  chance: 0.7 }
+];
+
+function pickObjectType() {
+  const r = Math.random();
+  let sum = 0;
+
+  for (const o of OBJECT_TYPES) {
+    sum += o.chance;
+    if (r < sum) return o.type;
+  }
+
+  return "good"; // fallback
+}
+
 let fallSpeed = 2;
 let spawnRate = 1500;
 
 function spawnObject() {
   if (!gameRunning) return;
 
+  const type = pickObjectType();
   const obj = document.createElement("div");
-  const isBad = Math.random() < 0.25;
-
-  obj.className = `object ${isBad ? "bad" : "good"}`;
+  const isBad = (type === "bad")
+  const isBonus = (type === "bonus")
+  
+  obj.className = `object ${type}`;
   obj.style.left = Math.random() * 90 + "%";
   game.appendChild(obj);
 
@@ -97,7 +117,7 @@ function spawnObject() {
     if (collision(obj, player)) {
       clearInterval(fall);
       obj.remove();
-      handleCatch(isBad);
+      handleCatch(type);
     }
 
     if (y > game.clientHeight) {
@@ -221,14 +241,16 @@ function gameOver() {
 
 /* ---------------- GAME LOGIC ---------------- */
 
-function handleCatch(isBad) {
-  if (isBad) {
+function handleCatch(type) {
+  if (type === "bad") {
     shrinkPlayer();
     return;
+  } else if (type === "bonus") {
+    score += 5;
+    scoreEl.textcontent = score;
+  } else score++;
+    scoreEl.textContent = score;
   }
-
-  score++;
-  scoreEl.textContent = score;
 }
 
 
