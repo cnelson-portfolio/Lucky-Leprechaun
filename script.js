@@ -21,6 +21,8 @@ let difficultyInterval = null;
 
 let shrinkTimeout = null;
 
+let highScoreHandled = false;
+
 
 /* ---------------- PLAYER ---------------- */
 
@@ -205,11 +207,15 @@ function gameOver() {
 
   document.querySelectorAll(".object").forEach(o => o.remove());
 
-  newHighScore();
-  releaseWakeLock();
+  if (!highScoreHandled) {
+    highScoreHandled = true;
+    newHighScore();
+  }
 
+  releaseWakeLock();
   startScreen.style.display = "flex";
 }
+
 
 
 /* ---------------- GAME LOGIC ---------------- */
@@ -296,10 +302,12 @@ document.addEventListener("visibilitychange", () => {
 function startGame() {
   resetGame();
   loadHighScore();
-  
+
+  highScoreHandled = false; //  reset here
+
   gameRunning = true;
 
-  neutralGamma = null; // reset calibration
+  neutralGamma = null;
   targetX = 50;
   playerX = 50;
 
