@@ -1,7 +1,7 @@
 const game = document.getElementById("game");
 const player = document.getElementById("player");
 const startScreen = document.getElementById("start-screen");
-
+const coinSound = document.getElementById("coinSound");
 const scoreEl = document.getElementById("score");
 const missesEl = document.getElementById("misses");
 
@@ -244,7 +244,7 @@ function handleCatch(type) {
   } else {
     score += 1;
   }
-
+  coinSound.play();
   scoreEl.textContent = score;
 }
 
