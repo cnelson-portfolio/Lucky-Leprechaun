@@ -168,6 +168,20 @@ function releaseWakeLock() {
   }
 }
 
+function gameOver() {
+  gameRunning = false;
+
+  clearInterval(spawnInterval);
+  clearInterval(difficultyInterval);
+
+  document.querySelectorAll(".object").forEach(o => o.remove());
+
+  newHighScore();
+  releaseWakeLock();
+
+  startScreen.style.display = "flex";
+}
+
 /* ---------------- GAME LOGIC ---------------- */
 
 function handleCatch(isBad) {
@@ -186,9 +200,7 @@ function handleMiss() {
   missesEl.textContent = misses;
 
   if (misses >= 5) {
-    newHighScore();
-    location.reload();
-    releaseWakeLock();
+    gameOver();
   }
 }
 
@@ -202,7 +214,7 @@ function increaseDifficulty() {
   spawnInterval = setInterval(spawnObject, spawnRate);
 }
 
-/* ---------- NEW HUGH SCORE --------------- */
+/* ---------- NEW HIGH SCORE --------------- */
 
 function newHighScore() {
   const name = prompt("Game Over! Enter your name:");
@@ -210,14 +222,14 @@ function newHighScore() {
     if (name) {
       const stored = JSON.parse(localStorage.getItem("highScore"));
 
-      if (!stored || coins > stored.score) {
+      if (!stored || score > stored.score) {
         const newHighScore = {
           player: name,
-          score: coins
+          score: score
         };
 
         localStorage.setItem("highScore", JSON.stringify(newHighScore));
-        highScoreTextEl.textContent = `${name} ${coins}`;
+        highScoreTextEl.textContent = `${name} ${score}`;
       }
     }
 }
@@ -252,6 +264,7 @@ document.addEventListener("visibilitychange", () => {
 });
 
 function startGame() {
+  loadHighScore();
   gameRunning = true;
 
   neutralGamma = null; // reset calibration
