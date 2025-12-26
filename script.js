@@ -9,6 +9,7 @@ const PLAYER_NORMAL_WIDTH = 96;
 const PLAYER_SHRUNK_WIDTH = 48;
 const SHRINK_DURATION = 3000; // ms
 
+const HIGH_SCORE_KEY = "luckyHighScore"
 /* ---------------- STATE ---------------- */
 
 let gameRunning = false;
@@ -256,7 +257,7 @@ function newHighScore() {
   const name = prompt("Game Over! Enter your name:");
 
     if (name) {
-      const stored = JSON.parse(localStorage.getItem("highScore"));
+      const stored = JSON.parse(localStorage.getItem(HIGH_SCORE_KEY));
 
       if (!stored || score > stored.score) {
         const newHighScore = {
@@ -264,7 +265,7 @@ function newHighScore() {
           score: score
         };
 
-        localStorage.setItem("highScore", JSON.stringify(newHighScore));
+        localStorage.setItem(HIGH_SCORE_KEY, JSON.stringify(newHighScore));
         highScoreTextEl.textContent = `${name} ${score}`;
       }
     }
@@ -274,7 +275,7 @@ function newHighScore() {
 const highScoreTextEl = document.getElementById("highScoreText");
 
 function loadHighScore() {
-  const stored = JSON.parse(localStorage.getItem("highScore"));
+  const stored = JSON.parse(localStorage.getItem(HIGH_SCORE_KEY));
 
   if (stored && stored.player && stored.score !== undefined) {
     highScoreTextEl.textContent = `${stored.player} ${stored.score}`;
