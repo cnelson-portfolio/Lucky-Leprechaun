@@ -196,6 +196,8 @@ function releaseWakeLock() {
 }
 
 function gameOver() {
+  if (!gameRunning) return;
+
   gameRunning = false;
 
   clearInterval(spawnInterval);
@@ -208,6 +210,7 @@ function gameOver() {
 
   startScreen.style.display = "flex";
 }
+
 
 /* ---------------- GAME LOGIC ---------------- */
 
