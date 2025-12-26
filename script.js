@@ -102,7 +102,6 @@ function spawnObject() {
   const type = pickObjectType();
   const obj = document.createElement("div");
   const isBad = (type === "bad")
-  const isBonus = (type === "bonus")
   
   obj.className = `object ${type}`;
   obj.style.left = Math.random() * 90 + "%";
@@ -123,7 +122,7 @@ function spawnObject() {
     if (y > game.clientHeight) {
       clearInterval(fall);
       obj.remove();
-      if (!isBad) handleMiss();
+      if (type === "bad") handleMiss();
     }
   }, 16);
 }
@@ -211,13 +210,6 @@ function resetGame() {
 
 /* ---------------- GAME OVER ----------------- */
 
-function releaseWakeLock() {
-  if (wakeLock) {
-    wakeLock.release();
-    wakeLock = null;
-  }
-}
-
 function gameOver() {
   if (!gameRunning) return;
 
@@ -245,13 +237,17 @@ function handleCatch(type) {
   if (type === "bad") {
     shrinkPlayer();
     return;
-  } else if (type === "bonus") {
-    score += 5;
-    scoreEl.textcontent = score;
-  } else score++;
-    scoreEl.textContent = score;
   }
+
+  if (type === "bonus") {
+    score += 5;
+  } else {
+    score += 1;
+  }
+
+  scoreEl.textContent = score;
 }
+
 
 
 function handleMiss() {
