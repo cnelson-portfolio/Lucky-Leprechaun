@@ -3,6 +3,6 @@ Wanted to build mobile apps without having to deploy through app stores. This si
 
 Once installed, will work in Offline/Airplane mode.
 
-Major hurdle was dynamic resizing of the brick "grid", to work on desktop and mobile screens, regardless of screen orientation.
+This game focuses on using tilt (along the gamma axis/y-axis) to control movement of game element.
 
 Enjoy!
