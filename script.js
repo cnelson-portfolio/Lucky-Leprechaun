@@ -186,7 +186,7 @@ function handleMiss() {
   missesEl.textContent = misses;
 
   if (misses >= 5) {
-    alert("Game Over!");
+    newHighScore();
     location.reload();
     releaseWakeLock();
   }
@@ -200,6 +200,39 @@ function increaseDifficulty() {
 
   clearInterval(spawnInterval);
   spawnInterval = setInterval(spawnObject, spawnRate);
+}
+
+/* ---------- NEW HUGH SCORE --------------- */
+
+function newHighScore() {
+  const name = prompt("Game Over! Enter your name:");
+
+    if (name) {
+      const stored = JSON.parse(localStorage.getItem("highScore"));
+
+      if (!stored || coins > stored.score) {
+        const newHighScore = {
+          player: name,
+          score: coins
+        };
+
+        localStorage.setItem("highScore", JSON.stringify(newHighScore));
+        highScoreTextEl.textContent = `${name} ${coins}`;
+      }
+    }
+}
+
+/* ---------- LOAD HIGH SCORE ---------- */
+const highScoreTextEl = document.getElementById("highScoreText");
+
+function loadHighScore() {
+  const stored = JSON.parse(localStorage.getItem("highScore"));
+
+  if (stored && stored.player && stored.score !== undefined) {
+    highScoreTextEl.textContent = `${stored.player} ${stored.score}`;
+  } else {
+    highScoreTextEl.textContent = "—";
+  }
 }
 
 /* ---------------- START ---------------- */
