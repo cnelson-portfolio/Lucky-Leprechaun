@@ -317,3 +317,7 @@ function startGame() {
 
   requestAnimationFrame(updatePlayer);
 }
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
