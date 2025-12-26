@@ -61,6 +61,7 @@ body {
 
 .good { background: gold; }
 .bad  { background: crimson; }
+.bonus {background: green;}
 
 /* Start overlay */
 #start-screen {
