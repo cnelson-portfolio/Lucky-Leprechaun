@@ -1,13 +1,9 @@
-const CACHE_NAME = "brick-buster-v2";
+const CACHE_NAME = "lucky-leprechaun-v1";
 const ASSETS = [
   "/",
   "/index.html",
   "/style.css",
   "/script.js",
-  "/brick_0.svg",
-  "/brick_1.svg",
-  "/brick_2.svg",
-  "/brick_3.svg",
   "/coin.svg",
   "/get_coin.mp3",
   "/brick_buster.png"
