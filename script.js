@@ -159,6 +159,33 @@ function releaseWakeLock() {
     wakeLock = null;
   }
 }
+
+/* ---------------- RESET GAME ------------ */
+
+function resetGame() {
+  score = 0;
+  misses = 0;
+
+  scoreEl.textContent = score;
+  missesEl.textContent = misses;
+
+  fallSpeed = 2;
+  spawnRate = 1500;
+
+  playerX = 50;
+  targetX = 50;
+  player.style.left = "50%";
+  player.style.width = `${PLAYER_NORMAL_WIDTH}px`;
+
+  neutralGamma = null;
+
+  if (shrinkTimeout) {
+    clearTimeout(shrinkTimeout);
+    shrinkTimeout = null;
+  }
+}
+
+
 /* ---------------- GAME OVER ----------------- */
 
 function releaseWakeLock() {
@@ -264,7 +291,9 @@ document.addEventListener("visibilitychange", () => {
 });
 
 function startGame() {
+  resetGame();
   loadHighScore();
+  
   gameRunning = true;
 
   neutralGamma = null; // reset calibration
